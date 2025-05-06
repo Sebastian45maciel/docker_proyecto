@@ -26,5 +26,6 @@ RUN sed -i 's/\r$//' /wait-for-db.sh
 # Usar el script de espera como comando de inicio
 CMD ["/wait-for-db.sh"]
 
-RUN adduser --disabled-password appuser
+RUN adduser --disabled-password --gecos "" appuser
 USER appuser
+

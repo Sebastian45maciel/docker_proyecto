@@ -1,3 +1,20 @@
+# Proyecto Flask con React
+
+Este proyecto consiste en una aplicación con un backend en Flask y un frontend en React. El backend gestiona una API que permite realizar varias operaciones, como obtener mensajes almacenados en una base de datos y consultar el clima de diferentes ciudades.
+
+## Requisitos
+
+- Python 3.x
+- Docker y Docker Compose
+- API Key de OpenWeatherMap (para obtener el clima)
+
+## Despliegue
+
+1. **Clona el repositorio**:
+   ```bash
+  
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

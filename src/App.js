@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function App() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
   // Cargar mensajes al inicio
   useEffect(() => {
-    fetch("http://localhost:5000/api/messages")
+    fetch(`${API_URL}/api/messages`)
       .then((res) => res.json())
       .then((data) => setMessages(data))
       .catch((err) => console.error("Error al obtener mensajes:", err));
   }, []);
 
-  // Enviar nuevo mensaje
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Enviando mensaje:", newMessage);
 
-    fetch("http://localhost:5000/api/messages", {
+    fetch(`${API_URL}/api/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -26,7 +28,10 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Respuesta del backend:", data);
-        setMessages([...messages, { id: messages.length + 1, text: newMessage }]);
+        fetch(`${API_URL}/api/messages`)
+          .then((res) => res.json())
+          .then((data) => setMessages(data))
+          .catch((err) => console.error("Error al obtener mensajes:", err));
         setNewMessage("");
       })
       .catch((err) => console.error("Error al enviar mensaje:", err));
