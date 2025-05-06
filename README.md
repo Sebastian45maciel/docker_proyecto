@@ -1,87 +1,173 @@
-# Proyecto Flask con React
+# Proyecto Dockerizado con Flask y React
 
-Este proyecto consiste en una aplicación con un backend en Flask y un frontend en React. El backend gestiona una API que permite realizar varias operaciones, como obtener mensajes almacenados en una base de datos y consultar el clima de diferentes ciudades.
+Este proyecto es una aplicación web que utiliza Flask para el backend y React para el frontend. La aplicación está dockerizada para facilitar su despliegue y ejecución en cualquier entorno.
 
-## Requisitos
+## Descripción
 
-- Python 3.x
-- Docker y Docker Compose
-- API Key de OpenWeatherMap (para obtener el clima)
+La aplicación tiene varias funcionalidades, como gestionar mensajes, obtener información sobre el clima y proporcionar un saludo personalizado. Utiliza una base de datos MySQL para almacenar los mensajes y un API para obtener el clima de una ciudad utilizando la API de OpenWeather.
 
-## Despliegue
+### Funcionalidades:
+- **Mensajes**: Obtener y crear mensajes almacenados en la base de datos.
+- **Clima**: Obtener la información del clima de una ciudad específica.
+- **Saludo**: Obtener un saludo personalizado según el nombre proporcionado en la URL.
 
-1. **Clona el repositorio**:
+## Tecnologías Utilizadas
+
+- **Backend**: Flask
+- **Frontend**: React
+- **Base de datos**: MySQL
+- **Docker**: Para contenerizar la aplicación
+- **Docker Compose**: Para facilitar la orquestación de contenedores
+
+## Arquitectura
+
+Este proyecto está compuesto por los siguientes contenedores:
+- **Backend**: Contenedor que ejecuta la aplicación Flask.
+- **Frontend**: Contenedor que ejecuta la aplicación React.
+- **Base de datos**: Contenedor que ejecuta MySQL.
+
+## Instalación
+
+### Prerrequisitos
+
+Asegúrate de tener las siguientes herramientas instaladas:
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Pasos para iniciar el proyecto
+
+1. Clona este repositorio en tu máquina local:
+
    ```bash
-  
+   git clone https://github.com/Sebastian45maciel/docker_proyecto.git
+   cd docker_proyecto
 
+Crea un archivo .env en la raíz del proyecto con las siguientes variables de entorno (asegúrate de usar una clave válida para la API de OpenWeather):
 
-# Getting Started with Create React App
+bash
+Copiar
+Editar
+OPENWEATHER_API_KEY=tu_clave_api_de_openweather
+DB_URL=mysql+pymysql://flaskuser:flaskpass@db/flaskdb
+Construye y levanta los contenedores con Docker Compose:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+bash
+Copiar
+Editar
+docker-compose up --build
+Accede a la aplicación:
 
-## Available Scripts
+Frontend: Abre tu navegador y ve a http://localhost:3000.
 
-In the project directory, you can run:
+Backend (API): El API estará disponible en http://localhost:5000.
 
-### `npm start`
+Rutas de la API
+1. Obtener mensajes
+GET /api/messages
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Devuelve todos los mensajes almacenados en la base de datos.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Respuesta:
 
-### `npm test`
+json
+Copiar
+Editar
+[
+  { "id": 1, "text": "Hola Mundo" },
+  { "id": 2, "text": "Este es un mensaje" }
+]
+2. Crear mensaje
+POST /api/messages
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Crea un nuevo mensaje. El cuerpo debe ser un JSON con la propiedad text.
 
-### `npm run build`
+Ejemplo de solicitud:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+json
+Copiar
+Editar
+{
+  "text": "Este es un nuevo mensaje"
+}
+Respuesta:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+json
+Copiar
+Editar
+{
+  "message": "Mensaje guardado"
+}
+3. Obtener clima
+GET /api/weather?city=NombreDeLaCiudad
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Devuelve la información del clima de la ciudad proporcionada.
 
-### `npm run eject`
+Ejemplo de solicitud:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+bash
+Copiar
+Editar
+GET http://localhost:5000/api/weather?city=London
+Respuesta:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+json
+Copiar
+Editar
+{
+  "city": "London",
+  "temperature": 15.2,
+  "description": "light rain"
+}
+4. Saludo
+GET /api/echo?name=Nombre
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Devuelve un saludo personalizado con el nombre proporcionado.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Ejemplo de solicitud:
 
-## Learn More
+bash
+Copiar
+Editar
+GET http://localhost:5000/api/echo?name=Juan
+Respuesta:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+json
+Copiar
+Editar
+{
+  "message": "Hola, Juan!"
+}
+Docker
+Este proyecto está completamente dockerizado. Si quieres ejecutar los contenedores localmente o en un servidor, puedes usar Docker Compose para levantar los servicios necesarios. Los contenedores están configurados para correr de forma aislada, pero pueden interactuar entre sí gracias a la red interna configurada en Docker Compose.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Docker Compose
+Docker Compose se utiliza para definir y correr multi-contenedores. El archivo docker-compose.yml define los servicios que necesitamos para ejecutar la aplicación: frontend, backend y base de datos.
 
-### Code Splitting
+Comandos útiles
+Levantar los contenedores: docker-compose up --build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Detener los contenedores: docker-compose down
 
-### Analyzing the Bundle Size
+Ver los logs de los contenedores: docker-compose logs -f
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Acceder al contenedor del backend: docker exec -it <backend_container_name> /bin/bash
 
-### Making a Progressive Web App
+Buenas prácticas de desarrollo
+Uso de ramas: Crea una rama para cada nueva funcionalidad o corrección.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Commits claros: Haz commits con mensajes descriptivos que indiquen claramente los cambios realizados.
 
-### Advanced Configuration
+Configuración de variables de entorno: Asegúrate de nunca subir tu archivo .env a GitHub. Usa .gitignore para protegerlo.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Contribución
+Si deseas contribuir a este proyecto, por favor sigue los siguientes pasos:
 
-### Deployment
+Haz un fork de este repositorio.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Crea una rama para tu nueva funcionalidad (git checkout -b feature/nueva-funcionalidad).
 
-### `npm run build` fails to minify
+Realiza los cambios y haz commit (git commit -am 'Añadir nueva funcionalidad').
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Haz push a tu rama (git push origin feature/nueva-funcionalidad).
+
+Abre un Pull Request para que podamos revisar tus cambios.
