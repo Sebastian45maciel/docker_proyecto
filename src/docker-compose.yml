@@ -1,17 +1,18 @@
 services:
   frontend:
     build:
-      context: ../  # Esto apunta a la carpeta 'frontend'
+      context: ../
     ports:
       - "3000:3000"
     depends_on:
       - backend
     networks:
       - mynetwork
-
+    
+    
   backend:
     build:
-      context: ../backend  # Esto apunta a la carpeta 'backend'
+      context: ../backend
     ports:
       - "5000:5000"
     environment:
@@ -24,7 +25,7 @@ services:
       - db
     networks:
       - mynetwork
-
+    
   db:
     image: mysql:5.7
     environment:
@@ -34,10 +35,11 @@ services:
       MYSQL_DATABASE: flaskdb
     networks:
       - mynetwork
-  
+   
+    
   nginx:
     build:
-      context: ../nginx  # Apunta a 'frontend/nginx' desde 'src'
+      context: ../nginx
     ports:
       - "80:80"
       - "443:443"
@@ -48,7 +50,8 @@ services:
       - backend
     networks:
       - mynetwork
-
+    
+    
   portainer:
     image: portainer/portainer-ce
     ports:
@@ -57,13 +60,69 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - mynetwork
-      
+   
+    
   adminer:
     image: adminer
     ports:
       - "8080:8080"
     networks:
       - mynetwork
+  
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: always
+    networks:
+      - mynetwork
+
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/log:/var/log
+      - ./promtail.yaml:/etc/promtail/promtail.yaml
+    command: -config.file=/etc/promtail/promtail.yaml
+    restart: always
+    networks:
+      - mynetwork
+
+    
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus-config:/etc/prometheus
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+  backup:
+    image: alpine
+    volumes:
+      - ./backups:/backups
+    entrypoint: ["sh", "-c", "echo '0 3 * * * mysqldump -u flaskuser -pflaskpass flaskdb > /backups/db_backup.sql' | crontab - && crond -f"]
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "4000:3000"  # usa 4000 en tu host para evitar conflicto con React
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - mynetwork
+    restart: always
+
+volumes:
+  grafana_data:
+
+
 
 
 

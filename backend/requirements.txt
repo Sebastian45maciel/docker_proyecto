@@ -4,3 +4,4 @@ requests
 python-dotenv
 sqlalchemy
 pymysql
+Flask-Talisman

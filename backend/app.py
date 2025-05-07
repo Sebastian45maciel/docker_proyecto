@@ -7,6 +7,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from sqlalchemy.exc import SQLAlchemyError
+from flask_talisman import Talisman
 
 # Cargar variables de entorno
 load_dotenv()
@@ -15,7 +16,7 @@ API_KEY = os.getenv("OPENWEATHER_API_KEY")
 # Configuración Flask
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"], methods=["GET", "POST", "OPTIONS"])
-
+# Talisman(app)  # Aplicar seguridad con Talisman
 
 
 
@@ -94,6 +95,12 @@ def get_weather():
     except requests.RequestException as e:
         print(f"Error al obtener datos del clima: {e}")
         return jsonify({"error": "No se pudo obtener la información del clima"}), 500
+@app.route('/monitor')
+def monitor():
+    # Aquí podrías consultar logs o datos de alerta y mostrarlos
+    logs = get_backend_logs()
+    return jsonify({"status": "running", "logs": logs})
+
 
 # Iniciar app
 if __name__ == '__main__':

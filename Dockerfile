@@ -1,27 +1,25 @@
-# Usa una imagen oficial de Node.js
-FROM node:16
+# Usa Node 18, requerido por tu proyecto
+FROM node:18
 
-# Establece el directorio de trabajo
-WORKDIR /app
-
-# Copia los archivos del frontend
-COPY ./ /app
-
-# Instala las dependencias
-RUN npm install
-
-# Expone el puerto de la aplicación React
-EXPOSE 3000
-
-# Comando para iniciar la app de React
-CMD ["npm", "start"]
-# Crear un usuario no privilegiado
+# Crear usuario sin privilegios
 RUN addgroup appgroup && adduser --disabled-password --ingroup appgroup appuser
 
-# Dar permisos sobre la carpeta de la app
-RUN chown -R appuser:appgroup /app
+# Crear el directorio de trabajo con permisos correctos
+RUN mkdir -p /app && chown -R appuser:appgroup /app
+WORKDIR /app
 
-
-
-RUN adduser --disabled-password --gecos "" appuser
+# Cambiar a usuario no root
 USER appuser
+
+# Copiar e instalar dependencias
+COPY --chown=appuser:appgroup package*.json ./
+RUN npm install
+
+# Copiar el resto del código
+COPY --chown=appuser:appgroup . .
+
+# Exponer el puerto
+EXPOSE 3000
+
+# Iniciar la app
+CMD ["npm", "start"]
